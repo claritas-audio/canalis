@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2026 Claritas Audio -->
 <component type="desktop-application">
   <id>io.github.claritas_audio.Canalis</id>
   <metadata_license>CC0-1.0</metadata_license>
@@ -29,28 +30,25 @@
   <screenshots>
     <screenshot type="default">
       <caption>Chains: effect strips that apps see as outputs and microphones</caption>
-      <image>https://raw.githubusercontent.com/claritas-audio/canalis/master/docs/screenshots/chains.png</image>
+      <image>https://raw.githubusercontent.com/claritas-audio/canalis/v0.2.1/docs/screenshots/chains.png</image>
     </screenshot>
     <screenshot>
       <caption>Devices: outputs, inputs and virtual devices with their defaults</caption>
-      <image>https://raw.githubusercontent.com/claritas-audio/canalis/master/docs/screenshots/devices.png</image>
+      <image>https://raw.githubusercontent.com/claritas-audio/canalis/v0.2.1/docs/screenshots/devices.png</image>
     </screenshot>
     <screenshot>
       <caption>Apps: every app that plays or records, and where it goes</caption>
-      <image>https://raw.githubusercontent.com/claritas-audio/canalis/master/docs/screenshots/apps.png</image>
+      <image>https://raw.githubusercontent.com/claritas-audio/canalis/v0.2.1/docs/screenshots/apps.png</image>
     </screenshot>
     <screenshot>
       <caption>Graph: the patchbay of every node and link</caption>
-      <image>https://raw.githubusercontent.com/claritas-audio/canalis/master/docs/screenshots/graph.png</image>
+      <image>https://raw.githubusercontent.com/claritas-audio/canalis/v0.2.1/docs/screenshots/graph.png</image>
     </screenshot>
   </screenshots>
-  <!-- No violence, language, social or money features: every OARS attribute is "none". -->
   <content_rating type="oars-1.1"/>
-  <supports>
-    <control>pointing</control>
-    <control>keyboard</control>
-  </supports>
   <requires>
+    <control>keyboard</control>
+    <control>pointing</control>
     <display_length compare="ge">720</display_length>
   </requires>
   <branding>

@@ -33,7 +33,8 @@ two screenshot/icon mirroring checks remain, which pass on Flathub's own builder
 1. **Both repos public**: `claritas-audio/canalis` and `claritas-audio/claritas` (the manifest
    clones both over HTTPS).
 2. **Tag the release** the manifest builds (`tag:` and `commit:` of the `canalis` module) and
-   add its `<release>` to the metainfo; keep the Claritas `commit:` equal to `CLARITAS_REV` in
+   add its `<release>` to the metainfo, with the screenshot URLs on that tag (Flathub wants
+   a tag or commit, not a branch); keep the Claritas `commit:` equal to `CLARITAS_REV` in
    `scripts/bundle-claritas.sh`.
 3. **Regenerate the Cargo sources** for that tag (below) and check the local build:
    `packaging/flatpak/build-local.sh --lint` must end with no lint errors.
@@ -79,7 +80,10 @@ started the service and its chain, and switching it off removed the file.
   installed there, and the user's own plugins load from there.
 - `--filesystem=xdg-run/pipewire-0`: Canalis is a PipeWire patchbay; it needs the whole graph,
   not the portal's screen-cast subset.
-- `--filesystem=xdg-documents/Canalis:create`: Export to file.
+- `--filesystem=xdg-documents/Canalis:create`: the chain library Import chain lists; a
+  directory listing has no portal (the export itself goes through the FileChooser portal).
+- `--talk-name=org.kde.StatusNotifierWatcher`: the tray icon (ksni, no well-known name in
+  the sandbox); quitting the service is done from there.
 - `--device=dri`: the egui window renders with OpenGL.
 - No `--talk-name=org.freedesktop.Flatpak`, no `host-os`, no `--socket=pulseaudio`.
 
@@ -93,9 +97,6 @@ python3 flatpak-cargo-generator.py ~/.cache/canalis/claritas-src/Cargo.lock \
 ```
 
 ## Still open
-- Screenshots in the metainfo point at `raw.githubusercontent.com/.../master/docs/screenshots/`:
-  they resolve only once the repo is public (`appstreamcli validate` without `--no-net`
-  checks them then).
 - The Background portal's autostart was proven on the home PC's portal backend
   (`xdg-desktop-portal-gnome` under niri), not on KDE; a real login start was not tried.
 - `flatpak-builder-lint` (repo and manifest) reports only what a private repo causes:
