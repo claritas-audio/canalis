@@ -30,19 +30,19 @@
   <screenshots>
     <screenshot type="default">
       <caption>Chains: effect strips that apps see as outputs and microphones</caption>
-      <image>https://raw.githubusercontent.com/claritas-audio/canalis/v0.2.1/docs/screenshots/chains.png</image>
+      <image>https://raw.githubusercontent.com/claritas-audio/canalis/v0.2.2/docs/screenshots/chains.png</image>
     </screenshot>
     <screenshot>
       <caption>Devices: outputs, inputs and virtual devices with their defaults</caption>
-      <image>https://raw.githubusercontent.com/claritas-audio/canalis/v0.2.1/docs/screenshots/devices.png</image>
+      <image>https://raw.githubusercontent.com/claritas-audio/canalis/v0.2.2/docs/screenshots/devices.png</image>
     </screenshot>
     <screenshot>
       <caption>Apps: every app that plays or records, and where it goes</caption>
-      <image>https://raw.githubusercontent.com/claritas-audio/canalis/v0.2.1/docs/screenshots/apps.png</image>
+      <image>https://raw.githubusercontent.com/claritas-audio/canalis/v0.2.2/docs/screenshots/apps.png</image>
     </screenshot>
     <screenshot>
       <caption>Graph: the patchbay of every node and link</caption>
-      <image>https://raw.githubusercontent.com/claritas-audio/canalis/v0.2.1/docs/screenshots/graph.png</image>
+      <image>https://raw.githubusercontent.com/claritas-audio/canalis/v0.2.2/docs/screenshots/graph.png</image>
     </screenshot>
   </screenshots>
   <content_rating type="oars-1.1"/>
@@ -56,6 +56,11 @@
     <color type="primary" scheme_preference="dark">#14161a</color>
   </branding>
   <releases>
+    <release version="0.2.2" date="2026-11-18">
+      <description>
+        <p>Packaging only, no change to the app itself. The Flatpak shows the tray icon, so the service can be quit from there. On Fedora the install command adds the COPR and on Debian and Ubuntu the signed APT repository, so system updates keep Canalis current.</p>
+      </description>
+    </release>
     <release version="0.2.1" date="2026-11-18">
       <description>
         <p>The first public release. One command installs Canalis on any distribution: the .rpm on Fedora, the .deb on Ubuntu and Debian, or a new tarball under your home folder elsewhere, each checked against SHA256SUMS. canalis --version prints the version. The logo intro plays on every launch except from the tray. Inside the Flatpak, plugins come from Flathub's LinuxAudio extensions, LV2 works, and Run at login uses the Background portal.</p>
