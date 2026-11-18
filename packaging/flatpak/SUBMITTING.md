@@ -85,6 +85,11 @@ started the service and its chain, and switching it off removed the file.
   directory listing has no portal (the export itself goes through the FileChooser portal).
 - `--talk-name=org.kde.StatusNotifierWatcher`: the tray icon (ksni, no well-known name in
   the sandbox); quitting the service is done from there.
+- `--socket=x11`, not `fallback-x11`: CLAP and LV2 plugin windows on Linux are X11 only
+  (the CLAP GUI extension and suil), so a Wayland session still needs X11 for them; the
+  Canalis window itself uses Wayland. With `fallback-x11` Claritas EQ's window never opened.
+  The linter's `finish-args-contains-both-x11-and-wayland` warning is expected; dropping
+  Wayland instead would put the whole window on XWayland, blurry under fractional scaling.
 - `--device=dri`: the egui window renders with OpenGL.
 - No `--talk-name=org.freedesktop.Flatpak`, no `host-os`, no `--socket=pulseaudio`.
 
