@@ -19,6 +19,13 @@
   <img alt="GPL-3.0-or-later" src="https://img.shields.io/badge/license-GPL--3.0--or--later-2ea44f">
 </p>
 
+<p align="center">
+  <a href="https://claritas.meltingbots.com/canalis"><b>Website</b></a> ·
+  <a href="https://claritas.meltingbots.com/canalis#download"><b>Download</b></a> ·
+  <a href="https://claritas.meltingbots.com/canalis/docs"><b>Docs</b></a> ·
+  <a href="https://github.com/claritas-audio/canalis/releases/latest"><b>Releases</b></a>
+</p>
+
 ---
 
 Put an EQ on everything your laptop plays. Clean up your mic for calls. Send Discord to your
