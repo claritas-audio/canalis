@@ -126,6 +126,6 @@ modules:
     sources:
       - type: git
         url: https://github.com/claritas-audio/canalis.git
-        tag: v0.2.2
-        commit: 5ab43d23886fb83f021094a1959dcb278e72cc0d
+        tag: v0.2.3
+        commit: 4b7e29a025fec78cfc7a43c2d3423f89fae85ac6
       - cargo-sources.json

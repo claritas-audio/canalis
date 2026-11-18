@@ -23,11 +23,12 @@ Flathub's own guide: https://docs.flathub.org/docs/for-app-authors/submission
   outside.
 
 ## Status (2026-11-18)
-The manifest pins v0.2.2 (`5ab43d2`) and Claritas `1a57f8e`; the Cargo sources match those
-lockfiles. Before submitting: push the v0.2.2 tag (the metainfo's screenshots point at it) and
-build the unmodified manifest from the public sources with `build-local.sh --lint`, checking
-the tray icon. v0.2.1 built that way, lint clean but for the two screenshot/icon mirroring
-checks, which pass on Flathub's own builders.
+Ready to submit. The manifest pins v0.2.3 (`4b7e29a`) and Claritas `1a57f8e`; the Cargo
+sources match those lockfiles. The 0.2.3 tree built with `build-local.sh` and was tried on the
+real PipeWire under niri: Send to Desktop EQ, the default output, Graph links, Claritas EQ's
+window, the tray and portal notifications. Lint: only the expected x11-and-wayland warning on
+the manifest and the two screenshot mirroring checks on the repo, which pass on Flathub's
+builders.
 `flathub.json` limits the build to x86_64 until aarch64 has been tried.
 
 ## Checklist
