@@ -132,3 +132,41 @@ jobs:
         run: >-
           gh release create "$GITHUB_REF_NAME" dist/*
           --repo "$GITHUB_REPOSITORY" --title "Canalis ${GITHUB_REF_NAME#v}" --generate-notes
+
+  # COPR builds the same tag for Fedora. The SRPM is made here, from this checkout and the
+  # Claritas clone the deploy key can read, so it works while Claritas is private (COPR could
+  # not download it). COPR_CONFIG is ~/.config/copr from copr.fedorainfracloud.org/api; it
+  # expires after 180 days.
+  copr:
+    if: github.ref_type == 'tag'
+    needs: release
+    runs-on: ubuntu-latest
+    container: fedora:43
+    steps:
+      - name: Tools
+        run: dnf install -y -q --setopt=install_weak_deps=False git rpm-build copr-cli
+      - uses: actions/checkout@v4
+        with:
+          path: canalis
+      - uses: actions/checkout@v4
+        with:
+          repository: claritas-audio/claritas
+          ssh-key: ${{ secrets.CLARITAS_DEPLOY_KEY }}
+          fetch-depth: 0
+          path: claritas
+      - name: Source RPM
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          commit="$(sed -n 's/^%global claritas_commit //p' canalis/packaging/rpm/canalis.spec)"
+          mkdir -p srpm/SOURCES
+          sed "s/^Version: .*/Version:        $version/" canalis/packaging/rpm/canalis.spec > srpm/canalis.spec
+          git -C canalis archive --prefix="canalis-$version/" -o "$PWD/srpm/SOURCES/canalis-$version.tar.gz" HEAD
+          git -C claritas archive --prefix="claritas-$commit/" -o "$PWD/srpm/SOURCES/claritas-$commit.tar.gz" "$commit"
+          rpmbuild -bs --define "_topdir $PWD/srpm" srpm/canalis.spec
+      - name: Build in COPR
+        env:
+          COPR_CONFIG: ${{ secrets.COPR_CONFIG }}
+        run: |
+          [ -n "$COPR_CONFIG" ] || { echo "::error::the COPR_CONFIG secret is missing"; exit 1; }
+          mkdir -p ~/.config && printf '%s\n' "$COPR_CONFIG" > ~/.config/copr && chmod 600 ~/.config/copr
+          copr-cli build meltingbots/canalis srpm/SRPMS/canalis-*.src.rpm

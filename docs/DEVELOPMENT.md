@@ -125,8 +125,12 @@ after the tag is pushed and the GitHub release exists:
 copr-cli buildscm canalis --clone-url https://github.com/claritas-audio/canalis.git \
   --commit v<version> --method make_srpm --spec packaging/rpm/canalis.spec
 ```
-While Claritas is private (from 0.2.1), COPR cannot download its archive, so the SRPM is
-built here with both sources and uploaded; it then carries the Claritas source:
+**At each release this is automatic:** the release workflow's `copr` job, after the GitHub
+release, builds the SRPM from the tag and the Claritas clone (deploy key) and runs
+`copr-cli build meltingbots/canalis`, failing if COPR fails. It needs the `COPR_CONFIG` Actions
+secret: the contents of `~/.config/copr`, renewed with the token every 180 days (also in chezmoi).
+By hand, while Claritas is private (COPR cannot download its archive), the same steps; the
+uploaded SRPM carries the Claritas source:
 ```sh
 curl -fsSLo ~/rpmbuild/SOURCES/canalis-<version>.tar.gz https://github.com/claritas-audio/canalis/archive/v<version>/canalis-<version>.tar.gz
 git -C ~/dev/personal/rust/claritas archive --prefix=claritas-<commit>/ -o ~/rpmbuild/SOURCES/claritas-<commit>.tar.gz <commit>

@@ -48,7 +48,8 @@ repo `claritas-audio/claritas-site`) shows the same pages; it copies them, it ne
    the tarball and `SHA256SUMS` (`docs/DEVELOPMENT.md` › Releases).
 2. **Install script:** nothing; it asks GitHub for the latest release. If `install.sh`
    itself changed, `pnpm docs:sync` in the site repo copies it to `/install.sh`.
-3. **COPR:** `copr-cli buildscm … --commit v<version>` (`docs/DEVELOPMENT.md` › COPR).
+3. **COPR:** nothing; the release workflow's `copr` job builds the tag in `meltingbots/canalis`
+   (`docs/DEVELOPMENT.md` › COPR). Renew the `COPR_CONFIG` secret when the token expires.
 4. **AUR** (on hold until there is an account): `packaging/aur/update.sh <version>`, commit,
    then push `PKGBUILD` and `.SRCINFO` to the AUR (`docs/DEVELOPMENT.md` › AUR).
 5. **Flathub** (once it is there): a PR to `flathub/io.github.claritas_audio.Canalis` with
