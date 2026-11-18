@@ -112,10 +112,12 @@ https://copr.fedorainfracloud.org/api/ saved as `~/.config/copr` (never in this 
 ```sh
 sudo dnf install copr-cli
 copr-cli create canalis --enable-net on \
-  --chroot fedora-43-x86_64 --chroot fedora-44-x86_64 --chroot fedora-rawhide-x86_64 \
+  --chroot fedora-43-x86_64 --chroot fedora-44-x86_64 --chroot fedora-45-x86_64 --chroot fedora-rawhide-x86_64 \
   --description "PipeWire router: virtual devices, per-app routing, a patchbay and effect chains" \
   --instructions "sudo dnf copr enable meltingbots/canalis && sudo dnf install canalis"
 ```
+When Fedora branches a new release, add its chroot (`copr-cli modify canalis --chroot …` with
+the full list) and rebuild the current version for it.
 (the docs and the site say `meltingbots/canalis`; with another account name, change
 `docs/manual/getting-started.md`, the README and the site's COPR card). At each release,
 after the tag is pushed and the GitHub release exists:
