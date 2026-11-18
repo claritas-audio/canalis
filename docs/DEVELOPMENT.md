@@ -156,9 +156,10 @@ workflow republishes by hand. The install script adds the repository on Debian a
 
 The signing key: ed25519, signing only, no expiry, no passphrase (CI signs unattended),
 fingerprint `A24EDC4A9F2CF09C06194286183B993A6CCFCB15`. Its private half and revocation
-certificate live in Luca's Keeper and in the `APT_GPG_KEY` secret, never in git. A new key
-means a new `.asc` here, `SignWith` in `packaging/apt/distributions`, the secret, and every
-user fetching the new keyring (the install script does it on its next run).
+certificate live in Luca's Vaultwarden (secure note "Canalis APT signing key") and in the
+`APT_GPG_KEY` secret, never in git. A new key means a new `.asc` here, `SignWith` in
+`packaging/apt/distributions`, the secret, and every user fetching the new keyring (the
+install script does it on its next run).
 
 Test a change without publishing: download a release's `.deb`, build the repository with the
 same steps in an `ubuntu:24.04` container, serve it with `python3 -m http.server`, and run
