@@ -170,10 +170,10 @@ it like a speaker or a microphone.
 curl -fsSL https://claritas.meltingbots.com/install.sh | sh
 ```
 
-The [script](install.sh) sets up the signed APT repository on Ubuntu and Debian and installs the
-`.rpm` on Fedora (with `sudo`), or the tarball under `~/.local` anywhere else. Fedora users can
-also follow the COPR (`sudo dnf copr enable meltingbots/canalis && sudo dnf install canalis`);
-either way updates come with the system. The packages and the tarball are also on the
+The [script](install.sh) enables the COPR on Fedora and the signed APT repository on Ubuntu and
+Debian (with `sudo`), so updates come with the system, or puts the tarball under `~/.local`
+anywhere else. By hand on Fedora: `sudo dnf copr enable meltingbots/canalis && sudo dnf install
+canalis`. The packages and the tarball are also on the
 [Releases](https://github.com/claritas-audio/canalis/releases)
 page. Every one includes the Claritas plugins.
 

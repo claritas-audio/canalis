@@ -14,9 +14,9 @@ The quickest way in is the install script. It picks the right package for your s
 curl -fsSL https://claritas.meltingbots.com/install.sh | sh
 ```
 
-On Ubuntu and Debian it adds the Canalis APT repository and installs from it, so `apt
-upgrade` keeps Canalis up to date. On Fedora it installs the release's `.rpm` with `dnf`. Both
-ask for your password through `sudo`. Anywhere else it unpacks Canalis into
+On Fedora it enables the Canalis COPR and on Ubuntu and Debian it adds the Canalis APT
+repository, then installs from there, so `dnf upgrade` or `apt upgrade` keeps Canalis up to
+date. Both ask for your password through `sudo`. Anywhere else it unpacks Canalis into
 `~/.local/lib/canalis`, with no password. Downloads are checked against the release's
 `SHA256SUMS`, and the APT repository is signed.
 

@@ -1,7 +1,7 @@
 #!/bin/sh
-# Installs Canalis: on Debian and Ubuntu from its signed APT repository, so apt keeps it up to
-# date; on Fedora the .rpm of the GitHub release; anywhere else the release tarball under
-# ~/.local without sudo.
+# Installs Canalis: on Fedora from its COPR and on Debian and Ubuntu from its signed APT
+# repository, so the system's updates keep it current; on the rest of the RHEL family the .rpm
+# of the GitHub release; anywhere else the release tarball under ~/.local without sudo.
 #
 #   curl -fsSL https://claritas.meltingbots.com/install.sh | sh
 #   curl -fsSL https://claritas.meltingbots.com/install.sh | sh -s -- --user
@@ -15,6 +15,7 @@ repo=claritas-audio/canalis
 releases="${CANALIS_RELEASES:-https://github.com/$repo/releases}"
 latest="${CANALIS_LATEST:-https://api.github.com/repos/$repo/releases/latest}"
 apt="${CANALIS_APT:-https://claritas.meltingbots.com/apt}"
+copr=meltingbots/canalis
 keyring=/usr/share/keyrings/canalis-archive-keyring.gpg
 sources=/etc/apt/sources.list.d/canalis.sources
 prefix="$HOME/.local"
@@ -54,6 +55,10 @@ if [ -n "$uninstall" ]; then
     say "Removing the canalis package (sudo apt remove canalis)."
     need_sudo; $sudo apt remove -y canalis; removed=1
   fi
+  if ls /etc/yum.repos.d/_copr*"${copr%/*}:${copr#*/}.repo" >/dev/null 2>&1; then
+    say "Removing the COPR repository $copr (sudo dnf copr remove)."
+    need_sudo; $sudo dnf copr remove -y "$copr"; removed=1
+  fi
   if [ -e "$sources" ] || [ -e "$keyring" ]; then
     say "Removing the Canalis APT repository ($sources, $keyring)."
     need_sudo; $sudo rm -f "$sources" "$keyring"; removed=1
@@ -81,6 +86,7 @@ if [ "$mode" = auto ]; then
   # shellcheck disable=SC1091
   [ -r /etc/os-release ] && . /etc/os-release
   case " ${ID:-} ${ID_LIKE:-} " in
+    " fedora "*) mode=copr ;;
     *" fedora "*|*" rhel "*) mode=rpm ;;
     *" debian "*|*" ubuntu "*) mode=deb ;;
     *) mode=user ;;
@@ -94,7 +100,21 @@ finish() {
   say "Remove it with: curl -fsSL https://claritas.meltingbots.com/install.sh | sh -s -- --uninstall"
 }
 
-# The latest version on Debian and Ubuntu comes from the repository; --version X from its file.
+# The latest version on Fedora, Debian and Ubuntu comes from the repositories; --version X
+# from that release's file.
+if [ "$mode" = copr ] && [ -n "$version" ]; then mode=rpm; fi
+if [ "$mode" = copr ]; then
+  say "Canalis: this script will"
+  say "  1. enable the COPR repository $copr with 'sudo dnf copr enable'"
+  say "  2. install canalis with 'sudo dnf install'; 'dnf upgrade' then keeps it up to date"
+  say ""
+  need_sudo
+  $sudo dnf install -y 'dnf-command(copr)'
+  $sudo dnf copr enable -y "$copr"
+  $sudo dnf install -y canalis
+  finish "$(rpm -q --qf '%{VERSION}' canalis 2>/dev/null)"
+  exit 0
+fi
 if [ "$mode" = deb ] && [ -z "$version" ]; then
   say "Canalis: this script will"
   say "  1. add the Canalis APT repository $apt, with its signing key in $keyring"

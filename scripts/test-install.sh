@@ -82,10 +82,10 @@ echo "--- install $OLD"
 run --version "$OLD" $FLAGS
 as "PATH=\$HOME/.local/bin:/usr/bin:/bin canalis --version" | grep -qx "canalis $OLD"
 echo "--- upgrade to the latest ($NEW)"
-# Debian and Ubuntu take the latest from the APT repository, which the apt workflow checks;
-# here they upgrade through the release file.
+# Fedora, Debian and Ubuntu take the latest from COPR and the APT repository, tested on their
+# own; here they upgrade through the release file.
 case "$IMAGE:$FLAGS" in
-  ubuntu*:|debian*:) run --version "$NEW" ;;
+  fedora*:|ubuntu*:|debian*:) run --version "$NEW" ;;
   *) run $FLAGS ;;
 esac
 case "$IMAGE:$FLAGS" in
