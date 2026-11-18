@@ -58,6 +58,11 @@
     <color type="primary" scheme_preference="dark">#14161a</color>
   </branding>
   <releases>
+    <release version="0.2.1" date="2026-11-18">
+      <description>
+        <p>The first public release. One command installs Canalis on any distribution: the .rpm on Fedora, the .deb on Ubuntu and Debian, or a new tarball under your home folder elsewhere, each checked against SHA256SUMS. canalis --version prints the version. The logo intro plays on every launch except from the tray. Inside the Flatpak, plugins come from Flathub's LinuxAudio extensions, LV2 works, and Run at login uses the Background portal.</p>
+      </description>
+    </release>
     <release version="0.2.0" date="2026-11-16">
       <description>
         <p>A/B compare, automatic level, a live spectrum, safe start after crashes and undo for chain edits. A soundboard with its own Pads tab, MIDI learn for any plugin parameter, keybind commands, device rules and desktop notifications. Graph selection, groups and a minimap. Italian, French and German. A chain no longer crashes when its outputs change.</p>

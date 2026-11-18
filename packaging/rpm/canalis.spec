@@ -6,7 +6,7 @@
 %global debug_package %{nil}
 
 Name:           canalis
-Version:        0.2.0
+Version:        0.2.1
 Release:        1%{?dist}
 Summary:        PipeWire router with effect chains
 License:        GPL-3.0-or-later
@@ -92,5 +92,8 @@ appstreamcli validate --no-net %{buildroot}%{_datadir}/metainfo/*.metainfo.xml
 %{_datadir}/icons/hicolor/scalable/apps/io.github.claritas_audio.Canalis.svg
 
 %changelog
+* Wed Nov 18 2026 Claritas Audio <noreply@github.com> - 0.2.1-1
+- First public release; notes on GitHub Releases.
+
 * Mon Nov 16 2026 Claritas Audio <noreply@github.com> - 0.2.0-1
 - First COPR build; release notes on GitHub Releases.
