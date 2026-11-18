@@ -30,19 +30,19 @@
   <screenshots>
     <screenshot type="default">
       <caption>Chains: effect strips that apps see as outputs and microphones</caption>
-      <image>https://raw.githubusercontent.com/claritas-audio/canalis/v0.2.2/docs/screenshots/chains.png</image>
+      <image>https://raw.githubusercontent.com/claritas-audio/canalis/v0.2.3/docs/screenshots/chains.png</image>
     </screenshot>
     <screenshot>
       <caption>Devices: outputs, inputs and virtual devices with their defaults</caption>
-      <image>https://raw.githubusercontent.com/claritas-audio/canalis/v0.2.2/docs/screenshots/devices.png</image>
+      <image>https://raw.githubusercontent.com/claritas-audio/canalis/v0.2.3/docs/screenshots/devices.png</image>
     </screenshot>
     <screenshot>
       <caption>Apps: every app that plays or records, and where it goes</caption>
-      <image>https://raw.githubusercontent.com/claritas-audio/canalis/v0.2.2/docs/screenshots/apps.png</image>
+      <image>https://raw.githubusercontent.com/claritas-audio/canalis/v0.2.3/docs/screenshots/apps.png</image>
     </screenshot>
     <screenshot>
       <caption>Graph: the patchbay of every node and link</caption>
-      <image>https://raw.githubusercontent.com/claritas-audio/canalis/v0.2.2/docs/screenshots/graph.png</image>
+      <image>https://raw.githubusercontent.com/claritas-audio/canalis/v0.2.3/docs/screenshots/graph.png</image>
     </screenshot>
   </screenshots>
   <content_rating type="oars-1.1"/>
@@ -56,6 +56,11 @@
     <color type="primary" scheme_preference="dark">#14161a</color>
   </branding>
   <releases>
+    <release version="0.2.3" date="2026-11-18">
+      <description>
+        <p>Fixes for the Flatpak. Choosing where an app plays, the default devices and links in the Graph now work inside it. Crash, clipping and lost-device notifications show through the desktop's notification portal. Plugin windows such as Claritas EQ's open on a Wayland session.</p>
+      </description>
+    </release>
     <release version="0.2.2" date="2026-11-18">
       <description>
         <p>Packaging only, no change to the app itself. The Flatpak shows the tray icon, so the service can be quit from there. On Fedora the install command adds the COPR and on Debian and Ubuntu the signed APT repository, so system updates keep Canalis current.</p>

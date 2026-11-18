@@ -691,7 +691,7 @@ dependencies = [
 
 [[package]]
 name = "canalis"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "anyhow",
  "canalis-chain",
@@ -716,7 +716,7 @@ dependencies = [
 
 [[package]]
 name = "canalis-chain"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "assert_no_alloc",
  "base64 0.22.1",
@@ -738,7 +738,7 @@ dependencies = [
 
 [[package]]
 name = "canalis-pads"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "assert_no_alloc",
  "rtrb",
@@ -748,7 +748,7 @@ dependencies = [
 
 [[package]]
 name = "canalis-pw"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "canalis-pads",
  "dirs",
