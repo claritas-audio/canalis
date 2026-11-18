@@ -123,6 +123,14 @@ after the tag is pushed and the GitHub release exists:
 copr-cli buildscm canalis --clone-url https://github.com/claritas-audio/canalis.git \
   --commit v<version> --method make_srpm --spec packaging/rpm/canalis.spec
 ```
+While Claritas is private (from 0.2.1), COPR cannot download its archive, so the SRPM is
+built here with both sources and uploaded; it then carries the Claritas source:
+```sh
+curl -fsSLo ~/rpmbuild/SOURCES/canalis-<version>.tar.gz https://github.com/claritas-audio/canalis/archive/v<version>/canalis-<version>.tar.gz
+git -C ~/dev/personal/rust/claritas archive --prefix=claritas-<commit>/ -o ~/rpmbuild/SOURCES/claritas-<commit>.tar.gz <commit>
+rpmbuild -bs packaging/rpm/canalis.spec          # in a fedora:43 container if rpm-build is missing
+copr-cli build canalis ~/rpmbuild/SRPMS/canalis-<version>-1.*.src.rpm
+```
 Locally, without COPR: `git archive --prefix=canalis-<version>/` of the tag and
 `git archive --prefix=claritas-<commit>/` of the Claritas clone into `~/rpmbuild/SOURCES`
 (the names in the spec's `Source` lines), then `rpmbuild -ba` in a clean `fedora:43`

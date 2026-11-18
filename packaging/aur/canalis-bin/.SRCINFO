@@ -1,6 +1,6 @@
 pkgbase = canalis-bin
 	pkgdesc = PipeWire router: virtual devices, per-app routing, a patchbay and effect chains with CLAP and LV2 plugins
-	pkgver = 0.2.0
+	pkgver = 0.2.1
 	pkgrel = 1
 	url = https://github.com/claritas-audio/canalis
 	arch = x86_64
@@ -24,7 +24,7 @@ pkgbase = canalis-bin
 	conflicts = canalis
 	options = !strip
 	options = !debug
-	source = https://github.com/claritas-audio/canalis/releases/download/v0.2.0/canalis-0.2.0-x86_64.tar.gz
-	sha256sums = SKIP
+	source = https://github.com/claritas-audio/canalis/releases/download/v0.2.1/canalis-0.2.1-x86_64.tar.gz
+	sha256sums = 762160c2cc25aab8a759ac243c4b69c657c9965992a06aba0c51debde90d67a9
 
 pkgname = canalis-bin
