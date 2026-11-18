@@ -1,4 +1,5 @@
-//! Desktop notifications from the service (org.freedesktop.Notifications): a chain that
+//! Desktop notifications from the service (org.freedesktop.Notifications, or the
+//! Notification portal inside the Flatpak): a chain that
 //! crashed or was stopped, a chain clipping, a device a running chain used going away.
 //! The sender is a client of the service's own socket, as the tray is; `Watch` decides.
 
@@ -12,7 +13,7 @@ use canalis_pw::remote::Remote;
 use canalis_pw::{ChainStatus, Command, Graph, MediaClass, Notifications};
 use log::{info, warn};
 use zbus::blocking::{Connection, Proxy};
-use zbus::zvariant::Value;
+use zbus::zvariant::{OwnedValue, Value};
 
 use crate::i18n::{t, tf};
 use crate::service::APP_ID;
@@ -222,10 +223,13 @@ fn run(socket: PathBuf, stop: Arc<AtomicBool>) {
             return;
         }
     };
-    let restarts: Arc<Mutex<HashMap<u32, String>>> = Arc::default();
+    // The sandbox's D-Bus filter hides org.freedesktop.Notifications; the portal is the way.
+    let portal = std::env::var_os("FLATPAK_ID").is_some();
+    let restarts: Arc<Mutex<HashMap<String, String>>> = Arc::default();
     let (commands, pending) = mpsc::channel();
-    listen_for_actions(bus.clone(), Arc::clone(&restarts), commands);
+    listen_for_actions(bus.clone(), portal, Arc::clone(&restarts), commands);
     let mut watch = Watch::default();
+    let mut sent = 0u32;
     // Graphs come only when something changes; meters move under the last one.
     let mut graph = None;
     while !stop.load(Ordering::Relaxed) && !remote.stopped() {
@@ -241,7 +245,13 @@ fn run(socket: PathBuf, stop: Arc<AtomicBool>) {
                     continue;
                 }
                 info!("notifying: {} · {}", event.summary, event.body);
-                match notify(&bus, &event) {
+                sent += 1;
+                let result = if portal {
+                    notify_portal(&bus, &event, format!("canalis-{sent}"))
+                } else {
+                    notify(&bus, &event).map(|id| id.to_string())
+                };
+                match result {
                     Ok(id) => {
                         if let Some(chain) = event.restart {
                             restarts
@@ -258,13 +268,43 @@ fn run(socket: PathBuf, stop: Arc<AtomicBool>) {
     }
 }
 
-fn proxy(bus: &Connection) -> zbus::Result<Proxy<'static>> {
-    Proxy::new(
-        bus,
-        "org.freedesktop.Notifications",
-        "/org/freedesktop/Notifications",
-        "org.freedesktop.Notifications",
-    )
+fn proxy(bus: &Connection, portal: bool) -> zbus::Result<Proxy<'static>> {
+    if portal {
+        Proxy::new(
+            bus,
+            "org.freedesktop.portal.Desktop",
+            "/org/freedesktop/portal/desktop",
+            "org.freedesktop.portal.Notification",
+        )
+    } else {
+        Proxy::new(
+            bus,
+            "org.freedesktop.Notifications",
+            "/org/freedesktop/Notifications",
+            "org.freedesktop.Notifications",
+        )
+    }
+}
+
+/// Through the Notification portal; the desktop names the app from the sandbox's id.
+fn notify_portal(bus: &Connection, event: &Event, id: String) -> zbus::Result<String> {
+    let mut notification: HashMap<&str, Value<'_>> = [
+        ("title", Value::from(event.summary.as_str())),
+        ("body", Value::from(event.body.as_str())),
+    ]
+    .into_iter()
+    .collect();
+    if event.restart.is_some() {
+        let button: HashMap<&str, Value<'_>> = [
+            ("label", Value::from(t("Start normally"))),
+            ("action", Value::from(RESTART_ACTION)),
+        ]
+        .into_iter()
+        .collect();
+        notification.insert("buttons", Value::from(vec![button]));
+    }
+    proxy(bus, true)?.call::<_, _, ()>("AddNotification", &(id.as_str(), notification))?;
+    Ok(id)
 }
 
 fn notify(bus: &Connection, event: &Event) -> zbus::Result<u32> {
@@ -275,7 +315,7 @@ fn notify(bus: &Connection, event: &Event) -> zbus::Result<u32> {
     let hints: HashMap<&str, Value<'_>> = [("desktop-entry", Value::from(APP_ID))]
         .into_iter()
         .collect();
-    proxy(bus)?.call(
+    proxy(bus, false)?.call(
         "Notify",
         &(
             "Canalis",
@@ -293,13 +333,15 @@ fn notify(bus: &Connection, event: &Event) -> zbus::Result<u32> {
 /// "Start normally" on a notification restarts its chain.
 fn listen_for_actions(
     bus: Connection,
-    restarts: Arc<Mutex<HashMap<u32, String>>>,
+    portal: bool,
+    restarts: Arc<Mutex<HashMap<String, String>>>,
     commands: mpsc::Sender<Command>,
 ) {
     let spawned = std::thread::Builder::new()
         .name("notification-actions".into())
         .spawn(move || {
-            let signals = match proxy(&bus).and_then(|p| p.receive_signal("ActionInvoked")) {
+            let signals = match proxy(&bus, portal).and_then(|p| p.receive_signal("ActionInvoked"))
+            {
                 Ok(signals) => signals,
                 Err(e) => {
                     warn!("notification actions off: {e}");
@@ -307,7 +349,15 @@ fn listen_for_actions(
                 }
             };
             for message in signals {
-                let Ok((id, action)) = message.body().deserialize::<(u32, String)>() else {
+                let body = message.body();
+                let invoked = if portal {
+                    body.deserialize::<(String, String, Vec<OwnedValue>)>()
+                        .map(|(id, action, _)| (id, action))
+                } else {
+                    body.deserialize::<(u32, String)>()
+                        .map(|(id, action)| (id.to_string(), action))
+                };
+                let Ok((id, action)) = invoked else {
                     continue;
                 };
                 let chain = restarts
