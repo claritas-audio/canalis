@@ -22,6 +22,13 @@ Flathub's own guide: https://docs.flathub.org/docs/for-app-authors/submission
   70 inside the sandbox (`chrt -p`, 2026-11-16), through libpipewire's RT module and rtkit, as
   outside.
 
+## Status (2026-11-18)
+Ready to submit: both repos are public, the manifest pins v0.2.1 (`5e59f01`) and Claritas
+`1a57f8e`, the Cargo sources match those lockfiles, and the unmodified manifest builds from the
+public sources with `flatpak-builder` (lint clean on the manifest; on the built repo only the
+two screenshot/icon mirroring checks remain, which pass on Flathub's own builders).
+`flathub.json` limits the build to x86_64 until aarch64 has been tried.
+
 ## Checklist
 1. **Both repos public**: `claritas-audio/canalis` and `claritas-audio/claritas` (the manifest
    clones both over HTTPS).
@@ -35,8 +42,8 @@ Flathub's own guide: https://docs.flathub.org/docs/for-app-authors/submission
    https://flathub.org with the GitHub account that owns the org and verify it from the
    developer portal (Flathub checks the org's membership; nothing to host).
 5. **Submit**: fork https://github.com/flathub/flathub, branch from `new-pr`, add
-   `io.github.claritas_audio.Canalis.yml`, `cargo-sources.json` and
-   `claritas-cargo-sources.json` at the root, open the PR against `new-pr` titled
+   `io.github.claritas_audio.Canalis.yml`, `cargo-sources.json`,
+   `claritas-cargo-sources.json` and `flathub.json` at the root, open the PR against `new-pr` titled
    "Add io.github.claritas_audio.Canalis". Answer the reviewers there; the bot builds on
    `bot, build`.
 6. **After merge**: Flathub creates `flathub/io.github.claritas_audio.Canalis`; updates are

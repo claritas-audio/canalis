@@ -52,7 +52,7 @@ modules:
   - name: lv2
     buildsystem: meson
     config-opts: [-Ddocs=disabled, -Dplugins=disabled, -Dtests=disabled, -Donline_docs=false]
-    cleanup: [/lib/lv2]
+    cleanup: [/lib/lv2, /bin]
     sources:
       - type: archive
         url: https://lv2plug.in/spec/lv2-1.18.10.tar.xz
@@ -133,6 +133,6 @@ modules:
     sources:
       - type: git
         url: https://github.com/claritas-audio/canalis.git
-        tag: v0.2.0
-        commit: e0cb86b7df2b13d4fcf4ed8008501b74394014af
+        tag: v0.2.1
+        commit: 5e59f01e35d14ce4a9a3226b7c643b2a78c70b49
       - cargo-sources.json
