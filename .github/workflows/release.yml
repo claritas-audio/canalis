@@ -133,6 +133,16 @@ jobs:
           gh release create "$GITHUB_REF_NAME" dist/*
           --repo "$GITHUB_REPOSITORY" --title "Canalis ${GITHUB_REF_NAME#v}" --generate-notes
 
+  apt:
+    if: github.ref_type == 'tag'
+    needs: release
+    uses: ./.github/workflows/apt.yml
+    secrets: inherit
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
   # COPR builds the same tag for Fedora. The SRPM is made here, from this checkout and the
   # Claritas clone the deploy key can read, so it works while Claritas is private (COPR could
   # not download it). COPR_CONFIG is ~/.config/copr from copr.fedorainfracloud.org/api; it

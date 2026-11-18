@@ -142,6 +142,29 @@ Locally, without COPR: `git archive --prefix=canalis-<version>/` of the tag and
 (the names in the spec's `Source` lines), then `rpmbuild -ba` in a clean `fedora:43`
 container after `dnf builddep`, or `mock -r fedora-43-x86_64 --enable-network`.
 
+### APT (Debian, Ubuntu)
+`https://claritas.meltingbots.com/apt` (the site redirects `/apt/*` to GitHub Pages,
+`claritas-audio.github.io/canalis/apt`) is a signed APT repository, suite `stable`, component
+`main`, amd64, holding the latest release only. `.github/workflows/apt.yml` rebuilds it from
+scratch: it downloads the latest release's `.deb`, checks it against `SHA256SUMS`, indexes it
+with `reprepro` (`packaging/apt/distributions`), signs with the key in the `APT_GPG_KEY`
+secret, checks the signature with the public key in `packaging/apt/canalis-archive-keyring.asc`
+and deploys to GitHub Pages. The release workflow calls it after each tag; Actions › apt › Run
+workflow republishes by hand. The install script adds the repository on Debian and Ubuntu
+(`/etc/apt/sources.list.d/canalis.sources`, key in
+`/usr/share/keyrings/canalis-archive-keyring.gpg`).
+
+The signing key: ed25519, signing only, no expiry, no passphrase (CI signs unattended),
+fingerprint `A24EDC4A9F2CF09C06194286183B993A6CCFCB15`. Its private half and revocation
+certificate live in Luca's Keeper and in the `APT_GPG_KEY` secret, never in git. A new key
+means a new `.asc` here, `SignWith` in `packaging/apt/distributions`, the secret, and every
+user fetching the new keyring (the install script does it on its next run).
+
+Test a change without publishing: download a release's `.deb`, build the repository with the
+same steps in an `ubuntu:24.04` container, serve it with `python3 -m http.server`, and run
+`CANALIS_APT=http://127.0.0.1:<port>/apt sh install.sh` in clean `ubuntu:24.04` and
+`debian:13` containers.
+
 ### AUR (Arch)
 `packaging/aur/canalis-bin/PKGBUILD` repackages the release tarball into
 `/usr/lib/canalis/{bin,lib/clap}` with `/usr/bin/canalis` and `share/`; `.SRCINFO` beside it

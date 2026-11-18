@@ -1,0 +1,8 @@
+Origin: Canalis
+Label: Canalis
+Codename: stable
+Suite: stable
+Architectures: amd64
+Components: main
+Description: Canalis, the PipeWire router (Ubuntu 24.04+, Debian 13+)
+SignWith: A24EDC4A9F2CF09C06194286183B993A6CCFCB15

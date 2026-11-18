@@ -14,10 +14,11 @@ The quickest way in is the install script. It picks the right package for your s
 curl -fsSL https://claritas.meltingbots.com/install.sh | sh
 ```
 
-On Fedora it installs the `.rpm` with `dnf`, on Ubuntu and Debian the `.deb` with `apt`; both
+On Ubuntu and Debian it adds the Canalis APT repository and installs from it, so `apt
+upgrade` keeps Canalis up to date. On Fedora it installs the release's `.rpm` with `dnf`. Both
 ask for your password through `sudo`. Anywhere else it unpacks Canalis into
-`~/.local/lib/canalis`, with no password. It checks every download against the release's
-`SHA256SUMS` before installing anything.
+`~/.local/lib/canalis`, with no password. Downloads are checked against the release's
+`SHA256SUMS`, and the APT repository is signed.
 
 > [!TIP]
 > Read a script before you pipe it into `sh`: open
@@ -28,7 +29,7 @@ Running it again upgrades. It also takes options after `sh -s --`:
 
 ```sh
 curl -fsSL https://claritas.meltingbots.com/install.sh | sh -s -- --user           # under ~/.local, no sudo
-curl -fsSL https://claritas.meltingbots.com/install.sh | sh -s -- --version 0.2.0  # that release
+curl -fsSL https://claritas.meltingbots.com/install.sh | sh -s -- --version 0.2.1  # that release
 curl -fsSL https://claritas.meltingbots.com/install.sh | sh -s -- --uninstall
 ```
 
@@ -42,6 +43,22 @@ On Fedora, the COPR repository brings every new version with your normal updates
 ```sh
 sudo dnf copr enable meltingbots/canalis
 sudo dnf install canalis
+```
+
+On Ubuntu 24.04 and later and Debian 13, the APT repository does the same. The install script
+sets it up; by hand it is:
+
+```sh
+sudo curl -fsSLo /usr/share/keyrings/canalis-archive-keyring.gpg https://claritas.meltingbots.com/apt/canalis-archive-keyring.gpg
+sudo tee /etc/apt/sources.list.d/canalis.sources <<'EOF'
+Types: deb
+URIs: https://claritas.meltingbots.com/apt
+Suites: stable
+Components: main
+Architectures: amd64
+Signed-By: /usr/share/keyrings/canalis-archive-keyring.gpg
+EOF
+sudo apt update && sudo apt install canalis
 ```
 
 On Arch Linux and other distributions, the install script puts Canalis under `~/.local`;

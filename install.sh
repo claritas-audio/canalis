@@ -1,18 +1,22 @@
 #!/bin/sh
-# Installs Canalis from its GitHub release: the .rpm on Fedora, the .deb on Debian and
-# Ubuntu (both with sudo), anywhere else the tarball under ~/.local without sudo.
+# Installs Canalis: on Debian and Ubuntu from its signed APT repository, so apt keeps it up to
+# date; on Fedora the .rpm of the GitHub release; anywhere else the release tarball under
+# ~/.local without sudo.
 #
 #   curl -fsSL https://claritas.meltingbots.com/install.sh | sh
 #   curl -fsSL https://claritas.meltingbots.com/install.sh | sh -s -- --user
 #
 # Options: --user (the tarball under ~/.local, also on Fedora/Debian/Ubuntu),
-# --version X (that release, not the latest), --uninstall. Running it again upgrades.
-# CANALIS_RELEASES and CANALIS_LATEST point it at another copy of the releases (tests).
+# --version X (that release's file, not the latest), --uninstall. Running it again upgrades.
+# CANALIS_RELEASES, CANALIS_LATEST and CANALIS_APT point it at other copies (tests).
 set -eu
 
 repo=claritas-audio/canalis
 releases="${CANALIS_RELEASES:-https://github.com/$repo/releases}"
 latest="${CANALIS_LATEST:-https://api.github.com/repos/$repo/releases/latest}"
+apt="${CANALIS_APT:-https://claritas.meltingbots.com/apt}"
+keyring=/usr/share/keyrings/canalis-archive-keyring.gpg
+sources=/etc/apt/sources.list.d/canalis.sources
 prefix="$HOME/.local"
 dest="$prefix/lib/canalis"
 
@@ -50,6 +54,10 @@ if [ -n "$uninstall" ]; then
     say "Removing the canalis package (sudo apt remove canalis)."
     need_sudo; $sudo apt remove -y canalis; removed=1
   fi
+  if [ -e "$sources" ] || [ -e "$keyring" ]; then
+    say "Removing the Canalis APT repository ($sources, $keyring)."
+    need_sudo; $sudo rm -f "$sources" "$keyring"; removed=1
+  fi
   if [ -x "$dest/bin/canalis" ]; then
     say "Removing $dest, $prefix/bin/canalis and the launcher entry."
     rm -f "$prefix/bin/canalis"
@@ -77,6 +85,32 @@ if [ "$mode" = auto ]; then
     *" debian "*|*" ubuntu "*) mode=deb ;;
     *) mode=user ;;
   esac
+fi
+
+finish() {
+  say ""
+  say "Canalis ${1:-} is installed. Open it from the app menu or run: canalis"
+  say "A Canalis already running switches to this version the next time you open its window."
+  say "Remove it with: curl -fsSL https://claritas.meltingbots.com/install.sh | sh -s -- --uninstall"
+}
+
+# The latest version on Debian and Ubuntu comes from the repository; --version X from its file.
+if [ "$mode" = deb ] && [ -z "$version" ]; then
+  say "Canalis: this script will"
+  say "  1. add the Canalis APT repository $apt, with its signing key in $keyring"
+  say "  2. install canalis with 'sudo apt-get install'; 'apt upgrade' then keeps it up to date"
+  say ""
+  need_sudo
+  tmp="$(mktemp -d)"
+  trap 'rm -rf "$tmp"' EXIT INT TERM
+  curl -fsSL -o "$tmp/keyring.gpg" "$apt/canalis-archive-keyring.gpg" || die "cannot download the signing key from $apt"
+  $sudo install -m 644 "$tmp/keyring.gpg" "$keyring"
+  printf 'Types: deb\nURIs: %s\nSuites: stable\nComponents: main\nArchitectures: amd64\nSigned-By: %s\n' \
+    "$apt" "$keyring" | $sudo tee "$sources" >/dev/null
+  $sudo apt-get update
+  $sudo apt-get install -y canalis
+  finish "$(dpkg-query -W -f '${Version}' canalis 2>/dev/null | sed 's/-[0-9]*$//')"
+  exit 0
 fi
 
 if [ -z "$version" ]; then
@@ -126,8 +160,7 @@ case "$mode" in
     ;;
 esac
 
-say ""
-say "Canalis $version is installed. Open it from the app menu or run: canalis"
+finish "$version"
 if [ "$mode" = user ]; then
   case ":$PATH:" in
     *":$prefix/bin:"*) ;;
@@ -135,5 +168,3 @@ if [ "$mode" = user ]; then
   esac
   say "LV2 plugins also need lilv and suil from your distribution."
 fi
-say "A Canalis already running switches to this version the next time you open its window."
-say "Remove it with: curl -fsSL https://claritas.meltingbots.com/install.sh | sh -s -- --uninstall"

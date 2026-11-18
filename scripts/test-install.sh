@@ -82,7 +82,12 @@ echo "--- install $OLD"
 run --version "$OLD" $FLAGS
 as "PATH=\$HOME/.local/bin:/usr/bin:/bin canalis --version" | grep -qx "canalis $OLD"
 echo "--- upgrade to the latest ($NEW)"
-run $FLAGS
+# Debian and Ubuntu take the latest from the APT repository, which the apt workflow checks;
+# here they upgrade through the release file.
+case "$IMAGE:$FLAGS" in
+  ubuntu*:|debian*:) run --version "$NEW" ;;
+  *) run $FLAGS ;;
+esac
 case "$IMAGE:$FLAGS" in
   fedora*:) rpm -q canalis | grep -q "canalis-$NEW-1" ;;
   ubuntu*:|debian*:) dpkg-query -W -f "\${Version}" canalis | grep -qx "$NEW-1" ;;

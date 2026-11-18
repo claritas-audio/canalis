@@ -1,0 +1,54 @@
+name: apt
+
+# The APT repository on GitHub Pages (https://claritas.meltingbots.com/apt redirects here):
+# the latest release's .deb, indexed by reprepro and signed with the key in APT_GPG_KEY
+# (fingerprint in packaging/apt/distributions). Rebuilt from scratch each time, so it holds the
+# latest version only. The release workflow calls it after a tag; a manual run republishes.
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tools
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq reprepro
+      - name: The latest release's .deb
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release download --repo "$GITHUB_REPOSITORY" --pattern 'canalis_*_amd64.deb' --pattern SHA256SUMS --dir deb
+      - name: Signed repository
+        env:
+          APT_GPG_KEY: ${{ secrets.APT_GPG_KEY }}
+        run: |
+          [ -n "$APT_GPG_KEY" ] || { echo "::error::the APT_GPG_KEY secret is missing"; exit 1; }
+          (cd deb && sha256sum -c --ignore-missing SHA256SUMS)
+          export GNUPGHOME="$RUNNER_TEMP/gnupg"
+          mkdir -m 700 "$GNUPGHOME"
+          printf '%s\n' "$APT_GPG_KEY" | gpg --batch --import
+          mkdir -p site/apt/conf
+          cp packaging/apt/distributions site/apt/conf/
+          reprepro -b site/apt includedeb stable deb/canalis_*_amd64.deb
+          rm -r site/apt/conf site/apt/db
+          cp packaging/apt/canalis-archive-keyring.asc site/apt/
+          gpg --dearmor < packaging/apt/canalis-archive-keyring.asc > site/apt/canalis-archive-keyring.gpg
+          gpgv --keyring site/apt/canalis-archive-keyring.gpg site/apt/dists/stable/InRelease
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v4
