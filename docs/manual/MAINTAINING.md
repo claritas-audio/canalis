@@ -50,8 +50,8 @@ repo `claritas-audio/claritas-site`) shows the same pages; it copies them, it ne
    itself changed, `pnpm docs:sync` in the site repo copies it to `/install.sh`.
 3. **COPR:** nothing; the release workflow's `copr` job builds the tag in `meltingbots/canalis`
    (`docs/DEVELOPMENT.md` › COPR). Renew the `COPR_CONFIG` secret when the token expires.
-   **APT:** nothing; the release workflow's `apt` job republishes the repository with the
-   new `.deb` (`docs/DEVELOPMENT.md` › APT).
+   **APT:** nothing; `apt.meltingbots.com` (repo `meltingbots/apt`) picks up the new `.deb`
+   within the hour (`docs/DEVELOPMENT.md` › APT).
 4. **AUR** (on hold until there is an account): `packaging/aur/update.sh <version>`, commit,
    then push `PKGBUILD` and `.SRCINFO` to the AUR (`docs/DEVELOPMENT.md` › AUR).
 5. **Flathub** (once it is there): a PR to `flathub/io.github.claritas_audio.Canalis` with

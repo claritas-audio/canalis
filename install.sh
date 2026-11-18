@@ -14,10 +14,10 @@ set -eu
 repo=claritas-audio/canalis
 releases="${CANALIS_RELEASES:-https://github.com/$repo/releases}"
 latest="${CANALIS_LATEST:-https://api.github.com/repos/$repo/releases/latest}"
-apt="${CANALIS_APT:-https://claritas.meltingbots.com/apt}"
+apt="${CANALIS_APT:-https://apt.meltingbots.com}"
 copr=meltingbots/canalis
-keyring=/usr/share/keyrings/canalis-archive-keyring.gpg
-sources=/etc/apt/sources.list.d/canalis.sources
+keyring=/usr/share/keyrings/meltingbots-archive-keyring.gpg
+sources=/etc/apt/sources.list.d/meltingbots.sources
 prefix="$HOME/.local"
 dest="$prefix/lib/canalis"
 
@@ -60,7 +60,7 @@ if [ -n "$uninstall" ]; then
     need_sudo; $sudo dnf copr remove -y "$copr"; removed=1
   fi
   if [ -e "$sources" ] || [ -e "$keyring" ]; then
-    say "Removing the Canalis APT repository ($sources, $keyring)."
+    say "Removing the meltingbots APT repository ($sources, $keyring)."
     need_sudo; $sudo rm -f "$sources" "$keyring"; removed=1
   fi
   if [ -x "$dest/bin/canalis" ]; then
@@ -117,13 +117,13 @@ if [ "$mode" = copr ]; then
 fi
 if [ "$mode" = deb ] && [ -z "$version" ]; then
   say "Canalis: this script will"
-  say "  1. add the Canalis APT repository $apt, with its signing key in $keyring"
+  say "  1. add the meltingbots APT repository $apt, with its signing key in $keyring"
   say "  2. install canalis with 'sudo apt-get install'; 'apt upgrade' then keeps it up to date"
   say ""
   need_sudo
   tmp="$(mktemp -d)"
   trap 'rm -rf "$tmp"' EXIT INT TERM
-  curl -fsSL -o "$tmp/keyring.gpg" "$apt/canalis-archive-keyring.gpg" || die "cannot download the signing key from $apt"
+  curl -fsSL -o "$tmp/keyring.gpg" "$apt/meltingbots-archive-keyring.gpg" || die "cannot download the signing key from $apt"
   $sudo install -m 644 "$tmp/keyring.gpg" "$keyring"
   printf 'Types: deb\nURIs: %s\nSuites: stable\nComponents: main\nArchitectures: amd64\nSigned-By: %s\n' \
     "$apt" "$keyring" | $sudo tee "$sources" >/dev/null

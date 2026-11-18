@@ -14,8 +14,8 @@ The quickest way in is the install script. It picks the right package for your s
 curl -fsSL https://claritas.meltingbots.com/install.sh | sh
 ```
 
-On Fedora it enables the Canalis COPR and on Ubuntu and Debian it adds the Canalis APT
-repository, then installs from there, so `dnf upgrade` or `apt upgrade` keeps Canalis up to
+On Fedora it enables the Canalis COPR and on Ubuntu and Debian it adds the meltingbots APT
+repository (`apt.meltingbots.com`), then installs from there, so `dnf upgrade` or `apt upgrade` keeps Canalis up to
 date. Both ask for your password through `sudo`. Anywhere else it unpacks Canalis into
 `~/.local/lib/canalis`, with no password. Downloads are checked against the release's
 `SHA256SUMS`, and the APT repository is signed.
@@ -49,14 +49,14 @@ On Ubuntu 24.04 and later and Debian 13, the APT repository does the same. The i
 sets it up; by hand it is:
 
 ```sh
-sudo curl -fsSLo /usr/share/keyrings/canalis-archive-keyring.gpg https://claritas.meltingbots.com/apt/canalis-archive-keyring.gpg
-sudo tee /etc/apt/sources.list.d/canalis.sources <<'EOF'
+sudo curl -fsSLo /usr/share/keyrings/meltingbots-archive-keyring.gpg https://apt.meltingbots.com/meltingbots-archive-keyring.gpg
+sudo tee /etc/apt/sources.list.d/meltingbots.sources <<'EOF'
 Types: deb
-URIs: https://claritas.meltingbots.com/apt
+URIs: https://apt.meltingbots.com
 Suites: stable
 Components: main
 Architectures: amd64
-Signed-By: /usr/share/keyrings/canalis-archive-keyring.gpg
+Signed-By: /usr/share/keyrings/meltingbots-archive-keyring.gpg
 EOF
 sudo apt update && sudo apt install canalis
 ```
