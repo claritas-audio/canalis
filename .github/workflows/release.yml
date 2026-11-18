@@ -57,7 +57,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: claritas-audio/claritas
-          ssh-key: ${{ secrets.CLARITAS_DEPLOY_KEY }}
           fetch-depth: 0
           path: claritas
       - name: The tag matches Cargo.toml
@@ -143,10 +142,9 @@ jobs:
       pages: write
       id-token: write
 
-  # COPR builds the same tag for Fedora. The SRPM is made here, from this checkout and the
-  # Claritas clone the deploy key can read, so it works while Claritas is private (COPR could
-  # not download it). COPR_CONFIG is ~/.config/copr from copr.fedorainfracloud.org/api; it
-  # expires after 180 days.
+  # COPR builds the same tag for Fedora, from an SRPM made here with this checkout and the
+  # Claritas clone at the pinned commit. COPR_CONFIG is ~/.config/copr from
+  # copr.fedorainfracloud.org/api; it expires after 180 days.
   copr:
     if: github.ref_type == 'tag'
     needs: release
@@ -161,7 +159,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: claritas-audio/claritas
-          ssh-key: ${{ secrets.CLARITAS_DEPLOY_KEY }}
           fetch-depth: 0
           path: claritas
       - name: Source RPM

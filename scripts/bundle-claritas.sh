@@ -12,8 +12,8 @@ set -euo pipefail
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 dest="${1:-$here/target/lib/clap}"
-src="${CLARITAS_SRC:-git@github.com:claritas-audio/claritas.git}"
-rev="${CLARITAS_REV:-1ae0a5b}"
+src="${CLARITAS_SRC:-https://github.com/claritas-audio/claritas.git}"
+rev="${CLARITAS_REV:-1a57f8e}"
 # Outside this repo: nice-plug's xtask builds in the outermost folder with a Cargo.toml.
 work="${CLARITAS_WORK:-${XDG_CACHE_HOME:-$HOME/.cache}/canalis/claritas-src}"
 

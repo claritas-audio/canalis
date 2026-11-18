@@ -54,7 +54,7 @@ The Claritas EQ and Comp CLAPs ship with Canalis (ADR 0007). Build them once, an
 after the pinned Claritas commit changes:
 
 ```sh
-scripts/bundle-claritas.sh        # clones claritas-audio/claritas over SSH into ~/.cache/canalis
+scripts/bundle-claritas.sh        # clones claritas-audio/claritas into ~/.cache/canalis
 CLARITAS_SRC=~/dev/personal/rust/claritas scripts/bundle-claritas.sh   # from a local checkout
 ```
 
@@ -96,8 +96,8 @@ Debian 13, and the tarball for any distribution with glibc 2.39+) and `scripts/p
 `fedora:43`, installs each package in its container, checks the Claritas CLAPs load from it and
 from the unpacked tarball, and attaches all three with `SHA256SUMS` to a GitHub release.
 A manual run (Actions › release › Run workflow) builds the packages as artifacts, no release.
-Claritas is private: CI clones it with the read-only deploy key in the `CLARITAS_DEPLOY_KEY`
-secret. Packages install to `/usr/lib/canalis/{bin,lib/clap}` (`<bin>/../lib/clap`, ADR 0007)
+CI clones the public Claritas repository at the commit `scripts/bundle-claritas.sh` pins.
+Packages install to `/usr/lib/canalis/{bin,lib/clap}` (`<bin>/../lib/clap`, ADR 0007)
 with `/usr/bin/canalis` as a symlink; dependencies and files are in `packaging/nfpm.yaml`.
 
 ### COPR (Fedora)
@@ -126,11 +126,10 @@ copr-cli buildscm canalis --clone-url https://github.com/claritas-audio/canalis.
   --commit v<version> --method make_srpm --spec packaging/rpm/canalis.spec
 ```
 **At each release this is automatic:** the release workflow's `copr` job, after the GitHub
-release, builds the SRPM from the tag and the Claritas clone (deploy key) and runs
+release, builds the SRPM from the tag and the Claritas clone and runs
 `copr-cli build meltingbots/canalis`, failing if COPR fails. It needs the `COPR_CONFIG` Actions
 secret: the contents of `~/.config/copr`, renewed with the token every 180 days (also in chezmoi).
-By hand, while Claritas is private (COPR cannot download its archive), the same steps; the
-uploaded SRPM carries the Claritas source:
+By hand, the same steps:
 ```sh
 curl -fsSLo ~/rpmbuild/SOURCES/canalis-<version>.tar.gz https://github.com/claritas-audio/canalis/archive/v<version>/canalis-<version>.tar.gz
 git -C ~/dev/personal/rust/claritas archive --prefix=claritas-<commit>/ -o ~/rpmbuild/SOURCES/claritas-<commit>.tar.gz <commit>

@@ -2,7 +2,7 @@
 # as packaging/nfpm.yaml: binaries in /usr/lib/canalis/bin so <bin>/../lib/clap finds the
 # Claritas CLAPs (ADR 0007). Cargo fetches crates at build time: the COPR project has
 # networking on. .copr/Makefile sets Version from Cargo.toml.
-%global claritas_commit 1ae0a5b8ec2ecd86439b3de5b73935d559f043cf
+%global claritas_commit 1a57f8e368c2ecca4a29b2a66e7844463e421d25
 %global debug_package %{nil}
 
 Name:           canalis
