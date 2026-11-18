@@ -40,7 +40,7 @@ repo `claritas-audio/claritas-site`) shows the same pages; it copies them, it ne
   `href`).
 - **New screenshots:** replace the files in `docs/screenshots/` (how they are made is in
   `docs/HANDOFF.md`, 2026-11-16: a private demo PipeWire, 1440×900). The tour GIF is a GitHub
-  attachment on issue #77, not a file here.
+  attachment on issue #7, not a file here.
 
 ## At a release, channel by channel
 1. **GitHub Releases:** bump `version` in `Cargo.toml`, add a `<release>` to the metainfo,

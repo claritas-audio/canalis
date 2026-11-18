@@ -34,7 +34,7 @@ four tools and a shell script that broke at the next login. With Canalis it take
 about a minute.
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/7cbb684e-6189-41eb-a012-ecf0b776e2ef" alt="A tour of Canalis: Desktop EQ made the default output in Devices, a browser sent to the headphones in Apps, the chains bypassed and back with the spectrum open, a music player patched into the Music into calls cable in the Graph, then soundboard pads played" width="100%">
+  <img src="https://github.com/user-attachments/assets/4b211a94-a7af-4a60-9deb-c61a904e8734" alt="A tour of Canalis: Desktop EQ made the default output in Devices, a browser sent to the headphones in Apps, the chains bypassed and back with the spectrum open, a music player patched into the Music into calls cable in the Graph, then soundboard pads played" width="100%">
 </p>
 
 ## What it does
