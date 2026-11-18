@@ -883,5 +883,7 @@ fn run(
 fn client_properties() -> pipewire::properties::PropertiesBox {
     pipewire::properties::properties! {
         *keys::APP_NAME => "Canalis",
+        // WirePlumber gives a Flatpak client only RX unless it is a Manager (a patchbay).
+        *keys::MEDIA_CATEGORY => "Manager",
     }
 }
