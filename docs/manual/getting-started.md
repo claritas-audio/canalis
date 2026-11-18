@@ -84,6 +84,10 @@ tar -xzf canalis-*-x86_64.tar.gz && ./canalis-*-x86_64/install.sh
 
 A Flatpak on Flathub is coming.
 
+Install Canalis one way only. The Flatpak and a package each run their own Canalis service
+with their own settings, and two services on one desktop remove each other's chains. To
+switch, uninstall the old one first (`--uninstall` for the script, or `flatpak uninstall`).
+
 ### Checking a download
 
 Put `SHA256SUMS` from the same release next to the download and run
