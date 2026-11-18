@@ -39,7 +39,11 @@ jobs:
           (cd deb && sha256sum -c --ignore-missing SHA256SUMS)
           export GNUPGHOME="$RUNNER_TEMP/gnupg"
           mkdir -m 700 "$GNUPGHOME"
-          printf '%s\n' "$APT_GPG_KEY" | gpg --batch --import
+          # gpg exits 2 on a lost armor blank line even when the key imports; the fingerprint
+          # check below is what counts.
+          printf '%s\n' "$APT_GPG_KEY" | gpg --batch --import || true
+          fingerprint="$(sed -n 's/^SignWith: //p' packaging/apt/distributions)"
+          gpg --batch --list-secret-keys "$fingerprint" >/dev/null || { echo "::error::APT_GPG_KEY is not the key $fingerprint"; exit 1; }
           mkdir -p site/apt/conf
           cp packaging/apt/distributions site/apt/conf/
           reprepro -b site/apt includedeb stable deb/canalis_*_amd64.deb
