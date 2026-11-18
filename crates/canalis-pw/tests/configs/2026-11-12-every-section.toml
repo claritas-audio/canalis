@@ -1,0 +1,131 @@
+# Format 0 (no `version`), as written up to 2026-11-12, by hand: every section and slot kind.
+virtual_device = [{ name = "canalis.obs-feed", label = "OBS feed", kind = "sink" }]
+hidden = ["alsa_output.pci-0000_00_1f.3.hdmi-stereo"]
+midi_input = "Midi-Bridge:nanoKONTROL2 0:(capture_0) nanoKONTROL2 _ CTRL"
+
+[targets]
+Firefox = "canalis.desktop-eq"
+"Telegram Desktop" = "canalis.voice.source"
+
+[labels]
+"alsa_output.usb-Focusrite_Scarlett_2i2_USB-00.Direct__Direct__sink" = "Speakers"
+
+[apps.Firefox]
+label = "Browser"
+color = "#4fc3f7"
+
+[[link]]
+output = { node = "canalis.obs-feed", port = "monitor_FL" }
+input = { node = "alsa_output.usb-Focusrite_Scarlett_2i2_USB-00.Direct__Direct__sink", port = "playback_FL" }
+
+[[chain]]
+name = "canalis.desktop-eq"
+label = "Desktop EQ"
+kind = "output"
+icon = "🎧"
+color = "#56b4e9"
+collapsed = true
+loudness_target = -14.0
+inputs = []
+outputs = ["alsa_output.usb-Focusrite_Scarlett_2i2_USB-00.Direct__Direct__sink"]
+gains = { "alsa_output.usb-Focusrite_Scarlett_2i2_USB-00.Direct__Direct__sink" = -3.0 }
+
+[[chain.slots]]
+bypass = false
+mix = 1.0
+folder = "Tone"
+label = "Warmth"
+[chain.slots.spec]
+kind = "eq"
+bands = [
+    { shape = "low-cut", freq_hz = 40.0, slope_db = 24 },
+    { shape = "bell", freq_hz = 250.0, gain_db = 1.5, q = 0.9 },
+    { shape = "high-shelf", freq_hz = 8000.0, gain_db = -2.0, enabled = false },
+]
+
+[[chain.slots]]
+mix = 0.5
+[chain.slots.spec]
+kind = "comp"
+
+[[chain.slots]]
+[chain.slots.spec]
+kind = "clap"
+path = "/usr/lib64/clap/lsp-plugins.clap"
+id = "in.lsp-plug.limiter_stereo"
+state = "AAECAwQFBgcICQ=="
+
+[[chain.slots]]
+[chain.slots.spec]
+kind = "group"
+[[chain.slots.spec.lanes]]
+label = "Dry"
+gain_db = -6.0
+pan = -0.3
+[[chain.slots.spec.lanes]]
+label = "Wide"
+mute = true
+[[chain.slots.spec.lanes.slots]]
+[chain.slots.spec.lanes.slots.spec]
+kind = "clap"
+path = "/usr/lib64/clap/lsp-plugins.clap"
+id = "in.lsp-plug.chorus_stereo"
+params = { "3" = 0.25 }
+
+[[chain]]
+name = "canalis.voice"
+label = "Voice"
+kind = "cable"
+mute = true
+key = "alsa_input.usb-Focusrite_Scarlett_2i2_USB-00.Direct__Direct__source"
+inputs = ["alsa_input.usb-Focusrite_Scarlett_2i2_USB-00.Direct__Direct__source"]
+outputs = []
+
+[[chain.slots]]
+[chain.slots.spec]
+kind = "lv2"
+uri = "http://lsp-plug.in/plugins/lv2/sc_compressor_stereo"
+preset = "http://lsp-plug.in/presets/voice"
+params = { "22" = 2.0, "39" = 8.0 }
+
+[[chain]]
+name = "canalis.rack"
+label = "Rack"
+kind = "insert"
+inputs = ["canalis.voice.out"]
+outputs = ["canalis.obs-feed"]
+
+[[chain.slots]]
+[chain.slots.spec]
+kind = "hardware"
+send = "alsa_output.usb-Focusrite_Scarlett_2i2_USB-00.Direct__Direct__sink"
+ret = "alsa_input.usb-Focusrite_Scarlett_2i2_USB-00.Direct__Direct__source"
+latency = 1024
+
+[[scene]]
+name = "Calls"
+sink = "canalis.desktop-eq"
+source = "canalis.voice.source"
+targets = { Firefox = "canalis.desktop-eq" }
+[[scene.chain]]
+name = "canalis.voice"
+inputs = ["alsa_input.usb-Focusrite_Scarlett_2i2_USB-00.Direct__Direct__source"]
+outputs = []
+mute = false
+bypass = [true]
+gains = { "canalis.voice.source" = -2.0 }
+
+[[control]]
+trigger = { kind = "cc", port = "nanoKONTROL2", channel = 0, cc = 7 }
+target = { kind = "gain", chain = "canalis.desktop-eq", target = "alsa_output.usb-Focusrite_Scarlett_2i2_USB-00.Direct__Direct__sink" }
+
+[[control]]
+trigger = { kind = "note", port = "nanoKONTROL2", channel = 0, note = 36 }
+target = { kind = "scene", name = "Calls" }
+
+[[plugin]]
+path = "/usr/lib64/clap/lsp-plugins.clap"
+id = "in.lsp-plug.limiter_stereo"
+name = "LSP Limiter Stereo"
+vendor = "LSP Project"
+modified = 1762000000

@@ -1,0 +1,47 @@
+version = 1
+virtual_device = []
+link = []
+scene = []
+
+[[chain]]
+name = "canalis.voice"
+label = "Voice"
+kind = "mic"
+inputs = ["alsa_input.usb-mic"]
+outputs = []
+
+[[chain.slots]]
+bypass = true
+mix = 0.75
+folder = "Tone"
+label = "Warmth"
+[chain.slots.spec]
+kind = "eq"
+bands = [
+    { shape = "low-cut", freq_hz = 80.0, slope_db = 24 },
+    { shape = "bell", freq_hz = 3200.0, gain_db = 2.0, q = 1.0, enabled = false },
+]
+
+[[chain.slots]]
+[chain.slots.spec]
+kind = "comp"
+
+[[chain.slots]]
+[chain.slots.spec]
+kind = "clap"
+path = "/usr/lib64/clap/lsp-plugins.clap"
+id = "in.lsp-plug.limiter_stereo"
+
+[[chain.slots]]
+[chain.slots.spec]
+kind = "group"
+[[chain.slots.spec.lanes]]
+label = "Lane 1"
+gain_db = 0.0
+[[chain.slots.spec.lanes.slots]]
+[chain.slots.spec.lanes.slots.spec]
+kind = "comp"
+[[chain.slots.spec.lanes]]
+label = "Lane 2"
+gain_db = -3.0
+slots = []

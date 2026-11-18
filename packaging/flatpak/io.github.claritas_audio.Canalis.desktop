@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Canalis
+Comment=PipeWire router with effect chains
+Exec=canalis
+Icon=io.github.claritas_audio.Canalis
+Terminal=false
+Categories=AudioVideo;Audio;Mixer;
+Keywords=PipeWire;EQ;routing;patchbay;microphone;
+StartupWMClass=io.github.claritas_audio.Canalis

@@ -1,0 +1,39 @@
+version = 1
+virtual_device = []
+link = []
+scene = []
+
+[targets]
+"Google Chrome" = "canalis.duck-music-when-i-talk"
+"Telegram Desktop" = "canalis.music-into-calls.source"
+"VLC media player (LibVLC 3.0.23)" = "canalis.test"
+
+[[chain]]
+name = "canalis.duck-music-when-i-talk"
+label = "Duck music when I talk"
+kind = "output"
+inputs = []
+outputs = ["alsa_output.usb-Focusrite_Scarlett_2i2_USB-00.Direct__Direct__sink"]
+key = "alsa_input.usb-Focusrite_Scarlett_2i2_USB-00.Direct__Direct__source"
+
+[[chain.slots]]
+bypass = false
+mix = 1.0
+
+[chain.slots.spec]
+kind = "lv2"
+uri = "http://lsp-plug.in/plugins/lv2/sc_compressor_stereo"
+
+[chain.slots.spec.params]
+22 = 2.0
+34 = 0.005623413251903491
+35 = 20.0
+36 = 0.0017782794100389228
+37 = 400.0
+39 = 8.0
+
+[labels]
+"alsa_output.usb-Focusrite_Scarlett_2i2_USB-00.Direct__Direct__sink" = "Focusrite Scarlett 2i2 Direct Scarlett 2i2 USB"
+
+[apps."Google Chrome"]
+color = "#56b4e9"

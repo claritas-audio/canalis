@@ -1,0 +1,79 @@
+# .deb and .rpm of Canalis; scripts/package.sh stages target/pkg and runs nfpm from the repo root.
+# The binaries live in /usr/lib/canalis/bin so `<bin>/../lib/clap` finds the Claritas CLAPs
+# (ADR 0007) and canalis-chain sits next to canalis; /usr/bin/canalis is a symlink.
+name: canalis
+arch: amd64
+platform: linux
+version: ${VERSION}
+release: 1
+section: sound
+priority: optional
+maintainer: Claritas Audio <noreply@github.com>
+vendor: Claritas Audio
+homepage: https://github.com/claritas-audio/canalis
+license: GPL-3.0-or-later
+description: |-
+  PipeWire router for the Linux desktop
+  Virtual microphones and outputs, per-app routing, a patchbay and effect chains
+  with the Claritas EQ and Comp plus CLAP and LV2 plugins.
+
+contents:
+  - src: target/pkg/canalis
+    dst: /usr/lib/canalis/bin/canalis
+    file_info: { mode: 0755 }
+  - src: target/pkg/canalis-chain
+    dst: /usr/lib/canalis/bin/canalis-chain
+    file_info: { mode: 0755 }
+  - src: target/pkg/clap/Claritas EQ.clap
+    dst: /usr/lib/canalis/lib/clap/Claritas EQ.clap
+    file_info: { mode: 0755 }
+  - src: target/pkg/clap/Claritas Comp.clap
+    dst: /usr/lib/canalis/lib/clap/Claritas Comp.clap
+    file_info: { mode: 0755 }
+  - src: /usr/lib/canalis/bin/canalis
+    dst: /usr/bin/canalis
+    type: symlink
+  - src: packaging/flatpak/io.github.claritas_audio.Canalis.desktop
+    dst: /usr/share/applications/io.github.claritas_audio.Canalis.desktop
+  - src: packaging/flatpak/io.github.claritas_audio.Canalis.metainfo.xml
+    dst: /usr/share/metainfo/io.github.claritas_audio.Canalis.metainfo.xml
+  - src: assets/canalis-app-icon.svg
+    dst: /usr/share/icons/hicolor/scalable/apps/io.github.claritas_audio.Canalis.svg
+  - src: LICENSE
+    dst: /usr/share/licenses/canalis/LICENSE
+
+# libpipewire is linked; the rest winit and glutin open at run time, so ldd does not list them.
+# lilv and suil are opened at run time too: without them LV2 is off, the rest works.
+overrides:
+  deb:
+    depends:
+      - libc6 (>= 2.39)
+      - libgcc-s1
+      - libpipewire-0.3-0t64
+      - libegl1
+      - libgl1
+      - libwayland-client0
+      - libwayland-cursor0
+      - libwayland-egl1
+      - libxkbcommon0
+      - libxkbcommon-x11-0
+      - libx11-6
+      - libx11-xcb1
+      - libxcursor1
+      - libxi6
+    recommends: [liblilv-0-0, libsuil-0-0]
+  rpm:
+    depends:
+      - pipewire-libs
+      - libglvnd-egl
+      - libglvnd-glx
+      - libwayland-client
+      - libwayland-cursor
+      - libwayland-egl
+      - libxkbcommon
+      - libxkbcommon-x11
+      - libX11
+      - libX11-xcb
+      - libXcursor
+      - libXi
+    recommends: [lilv-libs, suil]

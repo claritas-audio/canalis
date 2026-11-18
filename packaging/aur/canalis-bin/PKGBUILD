@@ -1,0 +1,32 @@
+# Maintainer: Claritas Audio <https://github.com/claritas-audio>
+# The release tarball, laid out as the .deb and .rpm: /usr/lib/canalis/{bin,lib/clap} so
+# canalis finds its Claritas CLAPs (<bin>/../lib/clap), /usr/bin/canalis a symlink.
+# At a release: packaging/aur/update.sh <version> (docs/DEVELOPMENT.md › AUR).
+pkgname=canalis-bin
+pkgver=0.2.0
+pkgrel=1
+pkgdesc='PipeWire router: virtual devices, per-app routing, a patchbay and effect chains with CLAP and LV2 plugins'
+arch=('x86_64')
+url='https://github.com/claritas-audio/canalis'
+license=('GPL-3.0-or-later')
+# winit and glutin open the GL, Wayland and X11 libraries at run time.
+depends=('glibc' 'gcc-libs' 'libpipewire' 'pipewire' 'libglvnd' 'wayland' 'libxkbcommon'
+         'libxkbcommon-x11' 'libx11' 'libxcursor' 'libxi' 'hicolor-icon-theme')
+optdepends=('lilv: LV2 plugins'
+            'suil: LV2 plugin windows'
+            'packagekit: install plugins from Settings › Plugins')
+provides=('canalis')
+conflicts=('canalis')
+options=('!strip' '!debug')
+source=("$url/releases/download/v$pkgver/canalis-$pkgver-$CARCH.tar.gz")
+# packaging/aur/update.sh fills this in from the release's SHA256SUMS.
+sha256sums=('SKIP')
+
+package() {
+  cd "canalis-$pkgver-$CARCH"
+  install -d "$pkgdir/usr/lib/canalis" "$pkgdir/usr/bin"
+  cp -R bin lib "$pkgdir/usr/lib/canalis/"
+  ln -s /usr/lib/canalis/bin/canalis "$pkgdir/usr/bin/canalis"
+  cp -R share "$pkgdir/usr/"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

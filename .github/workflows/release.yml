@@ -1,0 +1,134 @@
+name: release
+
+# A v* tag builds the .deb, the .rpm and the plain tarball and attaches them with SHA256SUMS
+# to a GitHub release; a manual run builds them as workflow artifacts only.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+  NFPM_VERSION: 2.48.0
+  NFPM_SHA256: 6d7f9a28b2f397934403950fcbba83f598b08d02edbe79a0815b3b4897341750
+
+jobs:
+  package:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # The oldest glibc each package supports: Ubuntu 24.04 (2.39) also covers Debian 13,
+          # and the tarball built there runs on any distribution at least that new.
+          - format: deb
+            formats: deb tar
+            image: ubuntu:24.04
+          - format: rpm
+            formats: rpm
+            image: fedora:43
+    runs-on: ubuntu-latest
+    container: ${{ matrix.image }}
+    env:
+      # Claritas pins its own toolchain in a mise.toml next to ours.
+      MISE_TRUSTED_CONFIG_PATHS: ${{ github.workspace }}
+      CLARITAS_WORK: ${{ github.workspace }}/claritas
+    steps:
+      - name: System packages (deb)
+        if: matrix.format == 'deb'
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update -qq
+          apt-get install -y -qq --no-install-recommends \
+            ca-certificates curl git openssh-client build-essential pkg-config clang libclang-dev \
+            libpipewire-0.3-dev libgl-dev libx11-dev libx11-xcb-dev libxcb1-dev \
+            libxcb-icccm4-dev libxcursor-dev libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev
+      - name: System packages (rpm)
+        if: matrix.format == 'rpm'
+        run: >-
+          dnf install -y --setopt=install_weak_deps=False
+          gcc git openssh-clients pkgconf-pkg-config curl unzip tar gzip clang-devel pipewire-devel
+          mesa-libGL-devel libX11-devel libxcb-devel xcb-util-wm-devel libXcursor-devel
+          libxkbcommon-devel libxkbcommon-x11-devel wayland-devel
+      # Side by side, not nested: nice-plug's xtask builds in the outermost folder with a Cargo.toml.
+      - uses: actions/checkout@v4
+        with:
+          path: canalis
+      - uses: actions/checkout@v4
+        with:
+          repository: claritas-audio/claritas
+          ssh-key: ${{ secrets.CLARITAS_DEPLOY_KEY }}
+          fetch-depth: 0
+          path: claritas
+      - name: The tag matches Cargo.toml
+        if: github.ref_type == 'tag'
+        working-directory: canalis
+        run: |
+          version="$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)"
+          [ "$GITHUB_REF_NAME" = "v$version" ] || { echo "tag $GITHUB_REF_NAME, Cargo.toml $version"; exit 1; }
+      - uses: jdx/mise-action@v2
+        with:
+          working_directory: canalis
+      # rust-cache asks rustc from the workspace root, outside canalis/mise.toml.
+      - name: The pinned Rust everywhere
+        working-directory: canalis
+        run: mise use -g "rust@$(mise current rust)"
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            canalis
+            claritas
+          key: ${{ matrix.format }}
+      - name: nfpm
+        run: |
+          curl -sSfL -o /tmp/nfpm.tgz "https://github.com/goreleaser/nfpm/releases/download/v${NFPM_VERSION}/nfpm_${NFPM_VERSION}_Linux_x86_64.tar.gz"
+          echo "$NFPM_SHA256  /tmp/nfpm.tgz" | sha256sum -c -
+          tar -xzf /tmp/nfpm.tgz -C /usr/local/bin nfpm
+      - name: Package
+        working-directory: canalis
+        run: scripts/package.sh ${{ matrix.formats }}
+      - name: Install the package and load the Claritas CLAPs from it
+        working-directory: canalis
+        run: |
+          if [ ${{ matrix.format }} = deb ]; then
+            apt-get install -y -qq ./target/dist/*.deb
+          else
+            dnf install -y ./target/dist/*.rpm
+          fi
+          if ldd /usr/lib/canalis/bin/* /usr/lib/canalis/lib/clap/*.clap | grep 'not found'; then exit 1; fi
+          [ "$(readlink -f /usr/bin/canalis)" = /usr/lib/canalis/bin/canalis ]
+          /usr/lib/canalis/bin/canalis-chain --scan "/usr/lib/canalis/lib/clap/Claritas EQ.clap" | grep audio.claritas.eq
+          /usr/lib/canalis/bin/canalis-chain --scan "/usr/lib/canalis/lib/clap/Claritas Comp.clap" | grep audio.claritas.comp
+      - name: The tarball's binaries find their CLAPs
+        if: matrix.format == 'deb'
+        working-directory: canalis
+        run: |
+          mkdir /tmp/tarball && tar -xzf target/dist/canalis-*-x86_64.tar.gz -C /tmp/tarball
+          cd /tmp/tarball/canalis-*-x86_64
+          ls bin/canalis share/applications/*.desktop share/metainfo/*.xml share/icons/hicolor/scalable/apps/*.svg install.sh
+          bin/canalis-chain --scan "lib/clap/Claritas EQ.clap" | grep audio.claritas.eq
+          bin/canalis --version
+      - uses: actions/upload-artifact@v4
+        with:
+          name: canalis-${{ matrix.format }}
+          path: canalis/target/dist/*
+          if-no-files-found: error
+
+  release:
+    if: github.ref_type == 'tag'
+    needs: package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - run: cd dist && sha256sum * > SHA256SUMS
+      - name: GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "$GITHUB_REF_NAME" dist/*
+          --repo "$GITHUB_REPOSITORY" --title "Canalis ${GITHUB_REF_NAME#v}" --generate-notes

@@ -1,0 +1,28 @@
+name: ci
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    container: fedora:44
+    steps:
+      - uses: actions/checkout@v4
+      - name: System packages
+        run: >-
+          dnf install -y --setopt=install_weak_deps=False
+          gcc git pkgconf-pkg-config curl unzip tar gzip clang-devel pipewire-devel
+          mesa-libGL-devel libX11-devel libxcb-devel libXcursor-devel
+          libxkbcommon-devel libxkbcommon-x11-devel wayland-devel lilv-libs
+      - uses: jdx/mise-action@v2
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --all --check
+      - run: cargo clippy --workspace --all-targets -- -D warnings
+      - run: cargo test --workspace
+      - run: cargo build -p canalis --release

@@ -1,0 +1,77 @@
+link = []
+scene = []
+version = 2
+virtual_device = []
+
+[[chain]]
+inputs = ["alsa_input.usb-mic"]
+kind = "mic"
+label = "Voice"
+name = "canalis.voice"
+outputs = []
+
+[[chain.slots]]
+bypass = true
+folder = "Tone"
+label = "Warmth"
+mix = 0.75
+
+[chain.slots.spec]
+id = "audio.claritas.eq"
+kind = "clap"
+path = ""
+
+[chain.slots.spec.params]
+1016181318 = 3.0
+1016181319 = 0.0
+111587 = 0.3614090085029602
+111588 = 0.39518827199935913
+1515834035 = 1.0
+1515834036 = 0.0
+1653260025 = 0.0
+1653260026 = 0.0
+34120349 = 3.0
+34120350 = 1.0
+881091626 = 0.21980136632919312
+881091627 = 0.5710886716842651
+894137201 = 0.5
+894137202 = 0.5333333611488342
+
+[[chain.slots]]
+
+[chain.slots.spec]
+id = "audio.claritas.comp"
+kind = "clap"
+path = ""
+
+[chain.slots.spec.params]
+
+[[chain.slots]]
+
+[chain.slots.spec]
+id = "in.lsp-plug.limiter_stereo"
+kind = "clap"
+path = "/usr/lib64/clap/lsp-plugins.clap"
+
+[[chain.slots]]
+
+[chain.slots.spec]
+kind = "group"
+
+[[chain.slots.spec.lanes]]
+gain_db = 0.0
+label = "Lane 1"
+
+[[chain.slots.spec.lanes.slots]]
+
+[chain.slots.spec.lanes.slots.spec]
+id = "audio.claritas.comp"
+kind = "clap"
+path = ""
+
+[chain.slots.spec.lanes.slots.spec.params]
+
+[[chain.slots.spec.lanes]]
+gain_db = -3.0
+label = "Lane 2"
+slots = []

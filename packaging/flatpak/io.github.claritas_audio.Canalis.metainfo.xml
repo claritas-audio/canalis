@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.claritas_audio.Canalis</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>Canalis</name>
+  <summary>Route and process audio on the PipeWire desktop</summary>
+  <developer id="io.github.claritas_audio">
+    <name>Claritas Audio</name>
+  </developer>
+  <description>
+    <p>
+      Canalis is a console for the Linux desktop's audio: virtual microphones and outputs,
+      a target for every app, DAW-style effect chains with built-in Claritas DSP and CLAP
+      plugins, and a patchbay. A chain is itself a device, so apps see "Desktop EQ" as an
+      output and "Voice for calls" as a microphone. Everything is remembered by name and
+      comes back at login.
+    </p>
+    <p>Works with WirePlumber's defaults and targets instead of around them.</p>
+  </description>
+  <launchable type="desktop-id">io.github.claritas_audio.Canalis.desktop</launchable>
+  <url type="homepage">https://claritas.meltingbots.com/canalis</url>
+  <url type="help">https://claritas.meltingbots.com/canalis/docs</url>
+  <url type="bugtracker">https://github.com/claritas-audio/canalis/issues</url>
+  <url type="vcs-browser">https://github.com/claritas-audio/canalis</url>
+  <provides>
+    <binary>canalis</binary>
+  </provides>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Chains: effect strips that apps see as outputs and microphones</caption>
+      <image>https://raw.githubusercontent.com/claritas-audio/canalis/master/docs/screenshots/chains.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Devices: outputs, inputs and virtual devices with their defaults</caption>
+      <image>https://raw.githubusercontent.com/claritas-audio/canalis/master/docs/screenshots/devices.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Apps: every app that plays or records, and where it goes</caption>
+      <image>https://raw.githubusercontent.com/claritas-audio/canalis/master/docs/screenshots/apps.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Graph: the patchbay of every node and link</caption>
+      <image>https://raw.githubusercontent.com/claritas-audio/canalis/master/docs/screenshots/graph.png</image>
+    </screenshot>
+  </screenshots>
+  <!-- No violence, language, social or money features: every OARS attribute is "none". -->
+  <content_rating type="oars-1.1"/>
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+  </supports>
+  <requires>
+    <display_length compare="ge">720</display_length>
+  </requires>
+  <branding>
+    <color type="primary" scheme_preference="light">#f2c94c</color>
+    <color type="primary" scheme_preference="dark">#14161a</color>
+  </branding>
+  <releases>
+    <release version="0.2.0" date="2026-11-16">
+      <description>
+        <p>A/B compare, automatic level, a live spectrum, safe start after crashes and undo for chain edits. A soundboard with its own Pads tab, MIDI learn for any plugin parameter, keybind commands, device rules and desktop notifications. Graph selection, groups and a minimap. Italian, French and German. A chain no longer crashes when its outputs change.</p>
+      </description>
+    </release>
+    <release version="0.1.0" date="2026-11-14">
+      <description>
+        <p>First release: devices, apps, chains with Claritas EQ and CLAP plugins, graph, autostart.</p>
+      </description>
+    </release>
+  </releases>
+</component>
