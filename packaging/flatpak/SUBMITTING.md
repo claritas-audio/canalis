@@ -23,10 +23,11 @@ Flathub's own guide: https://docs.flathub.org/docs/for-app-authors/submission
   outside.
 
 ## Status (2026-11-18)
-Ready to submit: both repos are public, the manifest pins v0.2.1 (`5e59f01`) and Claritas
-`1a57f8e`, the Cargo sources match those lockfiles, and the unmodified manifest builds from the
-public sources with `flatpak-builder` (lint clean on the manifest; on the built repo only the
-two screenshot/icon mirroring checks remain, which pass on Flathub's own builders).
+The manifest pins v0.2.2 (`5ab43d2`) and Claritas `1a57f8e`; the Cargo sources match those
+lockfiles. Before submitting: push the v0.2.2 tag (the metainfo's screenshots point at it) and
+build the unmodified manifest from the public sources with `build-local.sh --lint`, checking
+the tray icon. v0.2.1 built that way, lint clean but for the two screenshot/icon mirroring
+checks, which pass on Flathub's own builders.
 `flathub.json` limits the build to x86_64 until aarch64 has been tried.
 
 ## Checklist
