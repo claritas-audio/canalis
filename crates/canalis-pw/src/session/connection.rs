@@ -329,6 +329,9 @@ impl Session {
                 self.mirror.clock = Default::default();
             }
         }
+        // PipeWire hands the id to the next stream, which must not inherit a spent count.
+        let prefix = format!("target {id} -> ");
+        self.attempts.retain(|k, _| !k.starts_with(&prefix));
         if self.mirror.remove(id) {
             self.changed();
         }
